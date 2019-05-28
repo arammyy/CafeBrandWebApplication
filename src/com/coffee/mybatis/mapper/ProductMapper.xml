@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="Product">
+	<resultMap type="Product" id="ProductMap">
+		<id column="product_id" property="product_id"/>
+		<result column="name" property="name"/>
+		<result column="filename" property="filename"/>
+		<result column="price" property="price"/>
+		<result column="cost" property="cost"/>
+		<result column="isOnPoint" property="isOnPoint"/>
+		<result column="detail" property="detail"/>
+		<association column="category_id" property="category" javaType="Category" select="Category.select"></association>
+	</resultMap>
+	
+	<!-- sql select -->
+	<sql id="sql_select">
+		select product_id, name, filename, price, cost, category_id, detail, isOnPoint from product
+	</sql>
+
+	
+	<!-- 관리자 페이지 상품 추가 -->
+	<insert id="insert" parameterType="Product">
+		insert into product(name, filename, price, cost, category_id, detail)
+		values(#{name},#{filename},#{price},#{cost},#{category.category_id}, #{detail})
+	</insert>
+	
+	<!-- 관리자 페이지 상품 목록 + pointmall 페이지 및 메뉴 페이지에서 불러오기-->
+	<select id="selectAll" resultMap="ProductMap">
+		<include refid="sql_select"/> order by category_id
+	</select>
+	
+	<!-- 페이지 상품 상세정보 -->
+	<select id="select" parameterType="Product" resultMap="ProductMap">
+		<include refid="sql_select"/> where product_id = #{product_id}
+	</select>
+	
+	
+	<!-- 카테고리별 메뉴 출력 -->
+	<select id="selectByCategory" parameterType="int" resultMap="ProductMap">
+		<include refid="sql_select"/> where category_id=#{category_id}
+	</select>
+	
+	<!--포인트몰 페이지 상품 출력  -->
+	<select id="ptSelect" resultMap="ProductMap">
+		<include refid="sql_select"/> where isOnPoint=1 order by category_id
+	</select>
+	
+	<!-- 포인트몰 페이지 카테고리별 상품 출력 -->
+	<select id="ptSelectByCat" parameterType="int" resultMap="ProductMap">
+		<include refid="sql_select"/> where isOnPoint=1 and category_id=#{category_id}
+	</select>
+			
+	<!-- 관리자 페이지 상품 수정 -->
+	<update id="update" parameterType="Product">
+		update product set name = #{name}, filename = #{filename}, price = #{price}, cost = #{cost}, category_id = #{category.category_id}, detail=#{detail}, isonpoint = #{isOnPoint}
+		where product_id = #{product_id}
+	</update>
+	
+	<!-- 관리자 페이지 상품 삭제 -->
+	<delete id="delete" parameterType="int">
+		delete from product where product_id = #{product_id}
+	</delete>
+	
+	<select id="search" parameterType="Product" resultMap="ProductMap">
+		<include refid="sql_select"/> where name like concat('%',#{name},'%') and 
+		category_id = #{category.category_id}
+	</select>
+</mapper>

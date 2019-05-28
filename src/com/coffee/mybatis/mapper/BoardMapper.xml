@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="Board">
+	<resultMap type="Board" id="BoardMap">
+		<id column="board_id" property="board_id"/>
+		<result column="title" property="title"/>
+		<result column="content" property="content"/>
+		<result column="regdate" property="date"/>
+		<result column="rank" property="rank"/>
+		<result column="depth" property="depth"/>
+		<result column="team" property="team"/>
+		<association column="member_id" property="member" javaType="Member" select="Member.select"></association>
+	</resultMap>
+	<sql id="sql_select">
+		select board_id, title, content, regdate, rank, depth, team, member_id from board
+	</sql>
+	
+	<insert id="insert" parameterType="Board">
+		insert into board(title,content,rank,depth,team,member_id)
+		values(#{title},#{content},#{rank},#{depth},(select ifnull(max(team)+1,0) from board b),#{member.member_id})
+	</insert>
+	
+	<select id="selectAll" resultMap="BoardMap">
+		<include refid="sql_select"/> order by team desc, rank asc
+	</select>
+	
+	<select id="select" parameterType="int" resultMap="BoardMap">
+		<include refid="sql_select"/> where board_id = #{board_id}
+	</select>
+	
+	<update id="update" parameterType="Board">
+		update board set title=#{title},content=#{content}
+		where board_id = #{board_id}
+	</update>
+	
+	<delete id="delete" parameterType="int">
+		delete from board where board_id = #{board_id}
+	</delete>
+	
+	<insert id="reply" parameterType="Board">
+		insert into board(title,content,rank,depth,team,member_id)
+		values(#{title},#{content},#{rank},#{depth},#{team},#{member.member_id})
+	</insert>
+	
+</mapper>

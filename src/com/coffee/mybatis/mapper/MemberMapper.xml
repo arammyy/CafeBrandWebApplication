@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="Member">
+	<resultMap type="Member" id="MemberMap">
+		<id column="member_id" property="member_id"/>
+		<result column="id" property="id"/>
+		<result column="pass" property="pass"/>
+		<result column="phone" property="phone"/>
+		<result column="name" property="name"/>
+		<result column="age" property="age"/>
+		<result column="point" property="point"/>
+		<association column="grade_id" property="grade" javaType="Grade" select="Grade.select"></association>
+	</resultMap>
+	
+	<!-- sql select -->
+	<sql id="sql_select">
+		select member_id, id, pass, phone, name, age, point, grade_id from member
+	</sql>
+	
+	<!-- 회원 가입 insert문-->
+	<insert id="insert" parameterType="Member">
+		insert into member(id, pass, phone, name, age, point, grade_id)
+		values(#{id},#{pass},#{phone},#{name},#{age},1000,#{grade.grade_id})
+	</insert>
+	
+	<!-- Login select 문 -->
+	<select id="login" parameterType="Member" resultMap="MemberMap">
+		<include refid="sql_select"/> where id = #{id} and pass = #{pass}
+	</select>
+	
+	<!-- Find ID select 문 이름, 핸드폰 번호로 찾을 수 있음 이건 아이디만 보면 되기 때문에 sql문 사용 안함-->
+	<select id="findId" parameterType="Member" resultMap="MemberMap">
+		select id from member where name = #{name} and phone = #{phone}
+	</select>
+	
+	<!-- Find Password select 이름, 핸드폰번호, 아이디를 통해 찾음, 비밀번호만 보면 되기 때문에 sql문 사용 안함 -->
+	<select id="findPass" parameterType="Member" resultMap="MemberMap">
+	 	select pass from member where name = #{name} and phone = #{phone} and id = #{id} 
+	</select>
+	
+	<!-- 관리자 페이지에서 회원 목록을 불러오는 selectAll -->
+	<select id="selectAll" resultMap="MemberMap">
+		<include refid="sql_select"/> order by member_id desc
+	</select>
+	
+	<!-- 관리자 페이지에서 회원 목록의 상세정보를 보기 위해 사용되는 select -->
+	<select id="select" parameterType="int" resultMap="MemberMap">
+		<include refid="sql_select"/> where member_id = #{member_id}
+	</select>
+	
+	<!-- 상세정보에서 회원정보 수정을 위한 update -->
+	<update id="update" parameterType="Member">
+		update member set id = #{id}, pass = #{pass}, phone = #{phone}, name=#{name}, 
+		age = #{age}, point = #{point}, grade_id = #{grade.grade_id}
+		where member_id = #{member_id}
+	</update>
+	<update id="updatePoint" parameterType="Member">
+		update member set point=#{point} where member_id=#{member_id}
+	</update>
+	
+	<!-- 상세정보에서 회원정보 삭제를 위한 delete -->
+	<delete id="delete" parameterType="int">
+		delete from member where member_id = #{member_id}
+	</delete>
+	
+	<update id="changepass" parameterType="Member">
+		update member set pass = #{pass} where id = #{id} and name = #{name} and phone = #{phone}
+	</update>
+	
+	<select id="checkinfo" parameterType="Member" resultMap="MemberMap">
+		select id from member where id = #{id}
+	</select>
+	
+	<select id="checkphone" parameterType="Member" resultMap="MemberMap">
+		<include refid="sql_select"/> where phone=#{phone}
+	</select>
+	
+	<select id="search" parameterType="Member" resultMap="MemberMap">
+		<include refid="sql_select"/> where id = #{id}
+	</select>
+</mapper>

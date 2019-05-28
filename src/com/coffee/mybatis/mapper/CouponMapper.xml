@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="Coupon">
+	<resultMap type="Coupon" id="Couponmap">
+		<id column="coupon_id" property="coupon_id"/>
+		<result column="regdate" property="regdate"/>
+		<result column="ea" property="ea"/>
+		<association column="product_id" property="product" javaType="Product" select="Product.select"></association>
+		<association column="member_id" property="member" javaType="Member" select="Member.select"></association>
+	</resultMap>
+	
+	<!-- select sql -->
+	<sql id="sql_select">
+		select coupon_id, regdate, ea, product_id, member_id from coupon
+	</sql>
+	
+	<!-- insert문 pointmall에서 쿠폰 추가를 누르면 insert문을 통해 구매목록에 들어간다.-->
+	<insert id="insert" parameterType="Coupon">
+		insert into coupon(regdate, ea, product_id, member_id)
+		values(default, #{ea}, #{product.product_id}, #{member.member_id})
+		<selectKey resultType="int" keyProperty="coupon_id">
+  			select last_insert_id()
+ 	 	</selectKey>
+	</insert>
+	<select id="select" resultMap="Couponmap" parameterType="Coupon">
+		<include refid="sql_select"/> where member_id=#{member.member_id} and product_id=#{product.product_id}
+	</select>
+	
+	<select id="selectByMember" resultMap="Couponmap" parameterType="Member">
+		<include refid="sql_select"/> where member_id=#{member_id} 
+	</select>
+
+	<select id="selectByPk" resultMap="Couponmap" parameterType="int">
+		<include refid="sql_select"/> where coupon_id=#{coupon_id}
+	</select>
+
+	<update id="updateEa" parameterType="Coupon">
+		update coupon set ea=#{ea} where coupon_id=#{coupon_id}
+		<selectKey>
+			select ea from coupon where coupon_id=last_insert_id()
+		</selectKey>
+	</update>
+	<delete id="delete" parameterType="int">
+		delete from coupon where coupon_id=#{coupon_id}
+	</delete>
+</mapper>

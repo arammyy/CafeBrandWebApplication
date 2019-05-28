@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="Franchisee">
+	<resultMap type="Franchisee" id="FranchiseeMap">
+		<id column="franchisee_id" property="franchisee_id"/>
+		<result column="f_name" property="f_name"/>
+		<result column="addr" property="addr"/>
+		<result column="lati" property="lati"/>
+		<result column="longi" property="longi"/>
+		<result column="checked" property="checked"/>
+		<result column="message" property="message"/>
+		<result column="local" property="local"/>
+		<association column="member_id" property="member" javaType="Member" select="Member.select"></association>
+	</resultMap>
+	
+	<!-- sql select -->
+	<sql id="sql_select">
+		select franchisee_id, f_name, addr, lati, longi, checked, message, local, member_id from franchisee
+	</sql>
+	
+	<!-- Franchisee 신청서 작성 후 신청 -->
+	<insert id="insert" parameterType="Franchisee">
+		insert into franchisee(f_name,addr, message,local, member_id)
+		values(#{f_name},#{addr},#{message},#{local},#{member.member_id})
+	</insert>
+	
+	<!-- 관리자 페이지 franchisee 신청목록 -->
+	<select id="selectAll" resultMap="FranchiseeMap">
+		<include refid="sql_select"/>  order by checked asc, franchisee_id desc 
+	</select>
+	
+	<select id="searchAll" resultMap="FranchiseeMap">
+		<include refid="sql_select"/> where checked = 1 order by local asc, f_name desc
+	</select> 
+	
+	<!-- 관리자 페이지 franchisee 신청상세 정보 -->
+	<select id="select" parameterType="int" resultMap="FranchiseeMap">
+		<include refid="sql_select"/> where franchisee_id = #{franchisee_jd}
+	</select>
+	
+	<!-- 관리자 페이지 franchisee 승인 즉 check column 수정 -->
+	<update id="update" parameterType="Franchisee">
+		update franchisee set f_name=#{f_name}, addr=#{addr}, lati=#{lati}, longi=#{longi}, message=#{message}, local=#{local}, checked = #{checked} where franchisee_id = #{franchisee_id}
+	</update>
+	
+	<!-- 관리자 페이지 franchisee 거절 즉 삭제 -->
+	<delete id="delete" parameterType="int">
+		delete from franchisee where franchisee_id = #{franchisee_id}
+	</delete>
+	
+	<select id="search" parameterType="Franchisee" resultMap="FranchiseeMap">
+		<include refid="sql_select"/> where local like concat('%',#{local},'%') and f_name like concat('%',#{f_name},'%') and checked = 1 
+	</select>
+</mapper>

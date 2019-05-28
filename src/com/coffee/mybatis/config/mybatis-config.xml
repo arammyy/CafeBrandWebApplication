@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+  PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+  <typeAliases>
+  	<typeAlias type="com.coffee.model.domain.Board" alias="Board"/>
+  	<typeAlias type="com.coffee.model.domain.Category" alias="Category"/>
+  	<typeAlias type="com.coffee.model.domain.Coupon" alias="Coupon"/>
+  	<typeAlias type="com.coffee.model.domain.Franchisee" alias="Franchisee"/>
+  	<typeAlias type="com.coffee.model.domain.Grade" alias="Grade"/>
+  	<typeAlias type="com.coffee.model.domain.Member" alias="Member"/>
+  	<typeAlias type="com.coffee.model.domain.Product" alias="Product"/>
+  </typeAliases>
+  <mappers>
+    <mapper resource="com/coffee/mybatis/mapper/BoardMapper.xml"/>
+    <mapper resource="com/coffee/mybatis/mapper/CategoryMapper.xml"/>
+    <mapper resource="com/coffee/mybatis/mapper/CouponMapper.xml"/>
+    <mapper resource="com/coffee/mybatis/mapper/FranchiseeMapper.xml"/>
+    <mapper resource="com/coffee/mybatis/mapper/GradeMapper.xml"/>
+    <mapper resource="com/coffee/mybatis/mapper/MemberMapper.xml"/>
+    <mapper resource="com/coffee/mybatis/mapper/ProductMapper.xml"/>
+  </mappers>
+</configuration>

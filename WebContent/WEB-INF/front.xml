@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xsi:schemaLocation="http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.3.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.3.xsd">
+
+	<!-- Spring에서 지원하는 MVC 프레임워크 관련하여 여러 설정을 단축시킬 수 있는 태그, 즉 이 테그를 이용하면 개발자가 수많은 코드로 등록해야 하는 태그 수를 줄여줄 수 있다. -->
+	<!-- Spring mvc기반의 jsp가 아닌 정적 기반의 자원도 이용하기 위해 필요한 설정 -->
+	<!-- mvc 설정 사용시 mesaage converter를 mvc 설정에 추가 해야 한다. -->
+	<!-- Annotataion driven의 효과 : 여러 설정을 함축해 놓은 것
+	1) DefaultAnnotationHandlerMapping / 단 beannameurlhandlermapping은 default에서 제외된다.
+	2) annotationMethodHandlerAdapter가 등록됨...
+	- json 컨버터를 포함해서 총 7가지 이상의 유용한 컨버터가 등록되어 있다.. -->
+
+	<mvc:annotation-driven>
+		<mvc:message-converters>
+			<bean class="org.springframework.http.converter.StringHttpMessageConverter"> 
+					<property name="supportedMediaTypes">
+						<value>text/html;charset=utf-8</value>
+					</property>
+			</bean>
+		</mvc:message-converters>
+	</mvc:annotation-driven>
+	<mvc:default-servlet-handler/><!-- 서버 수준에서의 web.xml에 있는 defaultServlet을 다시 이용? --><!-- mvc가 지원하는 annotation사용 -->
+	<!-- 스프링의 dispatcher servlet이 url을 나낚아 챘기 때문에,  원래 html과 같은 정적 자원 처리를 담당하는 defaultservlet의 역할을 정상화 시킴 -->
+	
+	<context:component-scan base-package="com.coffee">
+		<context:include-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
+	</context:component-scan>
+	
+	<bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver"
+	p:prefix="/"
+	p:suffix=".jsp"/>
+	
+	   <!-- 파일 업로드를 위한 빈 설정 -->
+   <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+   <property name="maxUploadSize" value="10240000"></property>
+   </bean>
+   
+	
+	<aop:aspectj-autoproxy />
+    
+    <!-- Annotation기반 Aspect빈 등록 -->
+    <bean id="annotationAdminSessionAspect" class="com.coffee.aop.AnnotationAdminSessionAspect" />
+    <bean id="annotationClientSessionAspect" class="com.coffee.aop.AnnotationClientSessionAspect"/>
+    
+</beans>
