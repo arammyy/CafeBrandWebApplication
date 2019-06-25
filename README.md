@@ -5,9 +5,7 @@
 	<li>나의 개발 파트</li>
 	<ul>
 		<li>AOP 기반 관리자 페이지</li>
-		<li>회원가입</li>
-		<li>AOP 기반 로그인/로그아웃</li>
-		<li>Q&A 게시판</li>
+		<li>상품목록 게시판</li>
 	</ul>
 </ul>
 <table>
